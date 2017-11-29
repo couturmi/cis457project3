@@ -102,7 +102,12 @@ public class GameGUI extends JPanel {
         public void actionPerformed(ActionEvent e) {
             // connect button
             if(e.getSource() == connectButton) {
-
+                try {
+                    FTPClient.connectToServer(connectTextField.getText());
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    return;
+                }
             }
             // game tile buttons
             else {
