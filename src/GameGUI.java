@@ -52,7 +52,17 @@ public class GameGUI extends JPanel {
     }
 
     private boolean checkIfPlayerWon() {
-
+        if((!tiles[0].getText().equals("") && tiles[0].getText().equals(tiles[1].getText()) && tiles[0].getText().equals(tiles[2].getText()))   // row 1
+                || (!tiles[3].getText().equals("") && tiles[3].getText().equals(tiles[4].getText()) && tiles[3].getText().equals(tiles[5].getText()))   // row 2
+                || (!tiles[6].getText().equals("") && tiles[6].getText().equals(tiles[7].getText()) && tiles[6].getText().equals(tiles[8].getText()))   // row 3
+                || (!tiles[0].getText().equals("") && tiles[0].getText().equals(tiles[3].getText()) && tiles[0].getText().equals(tiles[6].getText()))   // col 1
+                || (!tiles[1].getText().equals("") && tiles[1].getText().equals(tiles[4].getText()) && tiles[1].getText().equals(tiles[7].getText()))   // col 2
+                || (!tiles[2].getText().equals("") && tiles[2].getText().equals(tiles[5].getText()) && tiles[2].getText().equals(tiles[8].getText()))   // col 3
+                || (!tiles[0].getText().equals("") && tiles[0].getText().equals(tiles[4].getText()) && tiles[0].getText().equals(tiles[8].getText()))   // diag top-left to bottom-right
+                || (!tiles[6].getText().equals("") && tiles[6].getText().equals(tiles[4].getText()) && tiles[6].getText().equals(tiles[2].getText()))   // diag bottom-left to top-right
+                ) {
+            return true;
+        }
         return false;
     }
 
