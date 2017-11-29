@@ -52,10 +52,14 @@ public class FTPClient {
         frame = new JFrame("Tic-Tac-Toe");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        GameGUI panel = new GameGUI();
+        GameGUI panel = new GameGUI(Player.USER);
         frame.getContentPane().add(panel);
 
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public static void sendMoveToServer(Move move){
+
     }
 }
