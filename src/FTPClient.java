@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.net.*;
 import java.io.*;
 import java.util.*;
@@ -8,9 +9,13 @@ import java.lang.*;
  * Created by mitchcout on 11/28/2017.
  */
 public class FTPClient {
+    private static JFrame frame;
     private static Socket ControlSocket;
 
     public static void main(String argv[]) throws Exception {
+        // Start GUI
+        startGUI();
+
         String input;
         System.out.println("Type connect <ip> <port>");
 
@@ -41,5 +46,16 @@ public class FTPClient {
             System.exit(1);
         }
 
+    }
+
+    private static void startGUI() {
+        frame = new JFrame("Tic-Tac-Toe");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        GameGUI panel = new GameGUI();
+        frame.getContentPane().add(panel);
+
+        frame.pack();
+        frame.setVisible(true);
     }
 }
