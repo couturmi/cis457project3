@@ -10,9 +10,12 @@ public class GameGUI extends JPanel {
 
     private final int BOARD_SIZE = 9;
 
-    private JPanel boardPanel;
+    private JPanel boardPanel, connectPanel;
 
     private JButton[] tiles;
+    private JLabel connectLabel;
+    private JTextField connectTextField;
+    private JButton connectButton;
 
     private ButtonListener m1;
 
@@ -23,21 +26,34 @@ public class GameGUI extends JPanel {
 
         // create objects
         boardPanel = new JPanel();
+        connectPanel = new JPanel();
+        connectLabel = new JLabel("Server IP: ");
+        connectTextField = new JTextField();
+        connectButton = new JButton("Connect");
+
+        // create listener for buttons
+        m1 = new ButtonListener();
+        connectButton.addActionListener(m1);
 
         // set JPanel layouts
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        connectPanel.setLayout(new BoxLayout(connectPanel, BoxLayout.X_AXIS));
         boardPanel.setLayout(new GridLayout(3,3));
+
+        // add objects to panels
+        connectPanel.add(connectLabel);
+        connectPanel.add(connectTextField);
+        connectPanel.add(connectButton);
 
         // create game board
         createBoard();
 
         // add JPanels to master panel
+        add(connectPanel);
         add(boardPanel);
     }
 
     private void createBoard() {
-        // create listener for buttons
-        m1 = new ButtonListener();
-
         // create game board
         tiles = new JButton[BOARD_SIZE];
         for(int i = 0; i < BOARD_SIZE; i++){
@@ -84,24 +100,31 @@ public class GameGUI extends JPanel {
 
     private class ButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            for(int i = 0; i < tiles.length; i++) {
-                if (e.getSource() == tiles[i]) {
-                    // Only execute if it is the user's turn and the tile has not been selected
-                    if(turn == Player.USER && tiles[i].getText().equals("")) {
-                        // update button
-                        tiles[i].setText("O");
-                        tiles[i].setForeground(Color.BLUE);
+            // connect button
+            if(e.getSource() == connectButton) {
 
-                        // check if user has won the game
-                        boolean userWon = false;
-                        if (checkIfPlayerWon()) {
-                            userWon = true;
-                            updateWinner(Player.USER);
+            }
+            // game tile buttons
+            else {
+                for (int i = 0; i < tiles.length; i++) {
+                    if (e.getSource() == tiles[i]) {
+                        // Only execute if it is the user's turn and the tile has not been selected
+                        if (turn == Player.USER && tiles[i].getText().equals("")) {
+                            // update button
+                            tiles[i].setText("O");
+                            tiles[i].setForeground(Color.BLUE);
+
+                            // check if user has won the game
+                            boolean userWon = false;
+                            if (checkIfPlayerWon()) {
+                                userWon = true;
+                                updateWinner(Player.USER);
+                            }
+
+                            // send move data to other player
+                            Move move = new Move(i, userWon);
+                            FTPClient.sendMoveToServer(move);
                         }
-
-                        // send move data to other player
-                        Move move = new Move(i, userWon);
-                        FTPClient.sendMoveToServer(move);
                     }
                 }
             }
