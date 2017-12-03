@@ -9,11 +9,13 @@ import java.awt.event.ActionListener;
 public class GameGUI extends JPanel {
 
     private final int BOARD_SIZE = 9;
+    private final String TURN_USER_TEXT = "YOUR TURN";
+    private final String TURN_OPPONENT_TEXT = "OPPONENT'S TURN";
 
-    private JPanel boardPanel, connectPanel;
+    private JPanel boardPanel, connectPanel, turnPanel;
 
     private JButton[] tiles;
-    private JLabel connectLabel;
+    private JLabel connectLabel, turnLabel;
     private JTextField connectTextField;
     private JButton connectButton;
 
@@ -27,13 +29,19 @@ public class GameGUI extends JPanel {
         // create objects
         boardPanel = new JPanel();
         connectPanel = new JPanel();
+        turnPanel = new JPanel();
         connectLabel = new JLabel("Server IP: ");
+        turnLabel = new JLabel("");
         connectTextField = new JTextField();
         connectButton = new JButton("Connect");
 
         // create listener for buttons
         m1 = new ButtonListener();
         connectButton.addActionListener(m1);
+
+        // alter views
+        turnLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        setTurnLabel();
 
         // set JPanel layouts
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -44,6 +52,7 @@ public class GameGUI extends JPanel {
         connectPanel.add(connectLabel);
         connectPanel.add(connectTextField);
         connectPanel.add(connectButton);
+        turnPanel.add(turnLabel);
 
         // create game board
         createBoard();
@@ -51,6 +60,7 @@ public class GameGUI extends JPanel {
         // add JPanels to master panel
         add(connectPanel);
         add(boardPanel);
+        add(turnPanel);
     }
 
     private void createBoard() {
@@ -93,8 +103,24 @@ public class GameGUI extends JPanel {
         tiles[buttonId].setForeground(Color.RED);
         tiles[buttonId].setEnabled(false);
 
+        // check if opponent has won
         if(opponentMove.isUserWon()) {
             updateWinner(Player.OPPONENT);
+        }
+
+        // update turn
+        turn = Player.USER;
+        setTurnLabel();
+    }
+
+    private void setTurnLabel() {
+        if(this.turn == Player.USER) {
+            turnLabel.setText(TURN_USER_TEXT);
+            turnLabel.setForeground(Color.BLUE);
+
+        } else if(this.turn == Player.OPPONENT) {
+            turnLabel.setText(TURN_OPPONENT_TEXT);
+            turnLabel.setForeground(Color.RED);
         }
     }
 
@@ -129,6 +155,10 @@ public class GameGUI extends JPanel {
                             // send move data to other player
                             Move move = new Move(i, userWon);
                             FTPClient.sendMoveToServer(move);
+
+                            // update turn
+                            turn = Player.OPPONENT;
+                            setTurnLabel();
                         }
                     }
                 }
