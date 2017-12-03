@@ -11,6 +11,8 @@ public class GameGUI extends JPanel {
     private final int BOARD_SIZE = 9;
     private final String TURN_USER_TEXT = "YOUR TURN";
     private final String TURN_OPPONENT_TEXT = "OPPONENT'S TURN";
+    private final String CONNECT_BUTTON_TEXT = "Connect";
+    private final String DISCONNECT_BUTTON_TEXT = "Disconnect";
 
     private JPanel boardPanel, connectPanel, turnPanel;
 
@@ -23,8 +25,11 @@ public class GameGUI extends JPanel {
 
     private Player turn;
 
+    private boolean gameInProgress;
+
     public GameGUI(Player turn) {
         this.turn = turn;
+        gameInProgress = false;
 
         // create objects
         boardPanel = new JPanel();
@@ -33,7 +38,7 @@ public class GameGUI extends JPanel {
         connectLabel = new JLabel("Server IP: ");
         turnLabel = new JLabel("");
         connectTextField = new JTextField();
-        connectButton = new JButton("Connect");
+        connectButton = new JButton(CONNECT_BUTTON_TEXT);
 
         // create listener for buttons
         m1 = new ButtonListener();
@@ -73,8 +78,40 @@ public class GameGUI extends JPanel {
             tiles[i].setFocusPainted(false);
             tiles[i].setBackground(Color.WHITE);
             tiles[i].addActionListener(m1);
+            tiles[i].setEnabled(false);
             boardPanel.add(tiles[i]);
         }
+    }
+
+    public void enableBoard() {
+        gameInProgress = true;
+
+        // enable game board tiles
+        if(tiles != null) {
+            for (int i = 0; i < BOARD_SIZE; i++) {
+                tiles[i].setEnabled(true);
+            }
+        }
+
+        // update connect panel
+        connectButton.setText(DISCONNECT_BUTTON_TEXT);
+        connectTextField.setEnabled(false);
+    }
+
+    private void disableBoard() {
+        gameInProgress = false;
+
+        // disable game board tiles
+        if(tiles != null) {
+            for (int i = 0; i < BOARD_SIZE; i++) {
+                tiles[i].setEnabled(false);
+                tiles[i].setText("");
+            }
+        }
+
+        // update connect panel
+        connectButton.setText(CONNECT_BUTTON_TEXT);
+        connectTextField.setEnabled(true);
     }
 
     private boolean checkIfPlayerWon() {
@@ -128,11 +165,21 @@ public class GameGUI extends JPanel {
         public void actionPerformed(ActionEvent e) {
             // connect button
             if(e.getSource() == connectButton) {
-                try {
-                    FTPClient.connectToServer(connectTextField.getText());
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                    return;
+                if(!gameInProgress) {
+                    try {
+                        FTPClient.connectToServer(connectTextField.getText());
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        return;
+                    }
+                } else {
+                    try {
+                        FTPClient.disconnect();
+                        disableBoard();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        return;
+                    }
                 }
             }
             // game tile buttons

@@ -29,8 +29,12 @@ public class FTPClient {
             System.out.println("Unable to connect to " + serverIP + ":" + port);
             return;
         }
+        System.out.println("Connected.");
         toServer = new DataOutputStream(ControlSocket.getOutputStream());
         fromServer = new DataInputStream(new BufferedInputStream(ControlSocket.getInputStream()));
+
+        // enable game board
+        panel.enableBoard();
     }
 
     private static void startGUI() {
@@ -46,5 +50,13 @@ public class FTPClient {
 
     public static void sendMoveToServer(Move move){
 
+    }
+
+    public static void disconnect() throws Exception{
+        System.out.println("Closing Control Socket");
+        toServer.writeBytes(0 + " close " + '\n');
+        ControlSocket.close();
+        toServer.close();
+        fromServer.close();
     }
 }
