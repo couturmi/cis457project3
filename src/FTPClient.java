@@ -107,8 +107,11 @@ public class FTPClient {
         System.out.println("Closing Control Socket");
         toServer.writeBytes(0 + " close " + '\n');
         ControlSocket.close();
+        chatSocket.close();
         toServer.close();
         fromServer.close();
+        chatToServer.close();
+        chatFromServer.close();
     }
 }
 
@@ -130,8 +133,10 @@ class ReadChat extends Thread {
                     break;
                 }
                 panel.chatTextArea.append(message + '\n');
-                vert = panel.scrollPane.getVerticalScrollBar();
-                vert.setValue(vert.getMaximum());
+                if(panel.chatTextArea.getLineCount() > 6) {
+                    vert = panel.scrollPane.getVerticalScrollBar();
+                    vert.setValue(vert.getMaximum());
+                }
             }
             socket.close();
             chatFromServer.close();
