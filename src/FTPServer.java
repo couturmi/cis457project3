@@ -34,7 +34,6 @@ public final class FTPServer {
         }
     }
 }
-
 class ClientHandler extends Thread {
 
     private final int dataPort = 5570;

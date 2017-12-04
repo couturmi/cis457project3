@@ -33,7 +33,6 @@ public class FTPClient {
         }
         System.out.println("Connected.");
         toServer = new DataOutputStream(ControlSocket.getOutputStream());
-
         toServer.writeBytes(name + '\n');
         // enable game board
         panel.enableBoard();
