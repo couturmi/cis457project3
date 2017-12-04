@@ -63,7 +63,7 @@ public class GameGUI extends JPanel {
 
         // alter views
         turnLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        chatTextArea.setPreferredSize(new Dimension(300,100));
+        //chatTextArea.setPreferredSize(new Dimension(300,100));
 
         // set JPanel layouts
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

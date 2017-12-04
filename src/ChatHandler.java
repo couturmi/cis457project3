@@ -30,7 +30,6 @@ public class ChatHandler extends Thread {
          }
          broadcast(name + ": " + message + '\n');
       }
-
    } catch (IOException ex) {
       System.out.println("-- Connection to user lost.");
    } finally {
