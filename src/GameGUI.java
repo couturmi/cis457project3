@@ -14,11 +14,12 @@ public class GameGUI extends JPanel {
     private final String CONNECT_BUTTON_TEXT = "Connect";
     private final String DISCONNECT_BUTTON_TEXT = "Disconnect";
 
-    private JPanel boardPanel, connectPanel, turnPanel, namePanel;
+    private JPanel boardPanel, connectPanel, turnPanel, namePanel, chatPanel;
 
     private JButton[] tiles;
     private JLabel connectLabel, turnLabel, nameLabel;
-    private JTextField connectTextField, nameTextField;
+    private JTextField connectTextField, nameTextField, chatTextField;
+    private JTextArea chatTextArea;
     private JButton connectButton;
 
     private ButtonListener m1;
@@ -36,11 +37,14 @@ public class GameGUI extends JPanel {
         connectPanel = new JPanel();
         turnPanel = new JPanel();
         namePanel = new JPanel();
+        chatPanel = new JPanel();
         connectLabel = new JLabel("Server IP: ");
         nameLabel = new JLabel("Name: ");
         turnLabel = new JLabel("");
         nameTextField = new JTextField();
         connectTextField = new JTextField();
+        chatTextField = new JTextField();
+        chatTextArea = new JTextArea(5, 10);
         connectButton = new JButton(CONNECT_BUTTON_TEXT);
 
         // create listener for buttons
@@ -56,6 +60,8 @@ public class GameGUI extends JPanel {
         namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
         connectPanel.setLayout(new BoxLayout(connectPanel, BoxLayout.X_AXIS));
         boardPanel.setLayout(new GridLayout(3,3));
+        chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+        chatPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 
         // add objects to panels
         namePanel.add(nameLabel);
@@ -64,6 +70,8 @@ public class GameGUI extends JPanel {
         connectPanel.add(connectTextField);
         connectPanel.add(connectButton);
         turnPanel.add(turnLabel);
+        chatPanel.add(chatTextArea);
+        chatPanel.add(chatTextField);
 
         // create game board
         createBoard();
@@ -73,6 +81,7 @@ public class GameGUI extends JPanel {
         add(connectPanel);
         add(boardPanel);
         add(turnPanel);
+        add(chatPanel);
     }
 
     private void createBoard() {
@@ -104,6 +113,7 @@ public class GameGUI extends JPanel {
         connectButton.setText(DISCONNECT_BUTTON_TEXT);
         nameTextField.setEnabled(false);
         connectTextField.setEnabled(false);
+        chatTextField.setEnabled(true);
     }
 
     private void disableBoard() {
@@ -121,6 +131,7 @@ public class GameGUI extends JPanel {
         connectButton.setText(CONNECT_BUTTON_TEXT);
         nameTextField.setEnabled(true);
         connectTextField.setEnabled(true);
+        chatTextField.setEnabled(false);
     }
 
     private boolean checkIfPlayerWon() {
