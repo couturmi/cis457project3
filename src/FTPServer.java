@@ -16,7 +16,7 @@ public final class FTPServer {
             System.out.println("Unable to set up port!");
             System.exit(1);
         }
-        System.out.println("[FTPServer] Server running on port: 5568");
+        System.out.println("[Server] Server running on port: 5568");
         while (true) {
             Socket connectionSocket = welcomeSocket.accept();
             System.out.println("[Client] Connected to " + connectionSocket.getRemoteSocketAddress().toString());
@@ -51,7 +51,13 @@ class ClientHandler extends Thread {
         String fromClient;
         String clientCommand;
         String frstln;
-
+        String name = input.nextLine();
+        try {
+            ChatHandler c = new ChatHandler(name, clientSocket);
+            c.start();
+        } catch(IOException ioEx) {
+            ioEx.printStackTrace();
+        }
         do {
             // read in initial command line from client
             fromClient = input.nextLine();

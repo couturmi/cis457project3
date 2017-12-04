@@ -14,11 +14,11 @@ public class GameGUI extends JPanel {
     private final String CONNECT_BUTTON_TEXT = "Connect";
     private final String DISCONNECT_BUTTON_TEXT = "Disconnect";
 
-    private JPanel boardPanel, connectPanel, turnPanel;
+    private JPanel boardPanel, connectPanel, turnPanel, namePanel;
 
     private JButton[] tiles;
-    private JLabel connectLabel, turnLabel;
-    private JTextField connectTextField;
+    private JLabel connectLabel, turnLabel, nameLabel;
+    private JTextField connectTextField, nameTextField;
     private JButton connectButton;
 
     private ButtonListener m1;
@@ -35,8 +35,11 @@ public class GameGUI extends JPanel {
         boardPanel = new JPanel();
         connectPanel = new JPanel();
         turnPanel = new JPanel();
+        namePanel = new JPanel();
         connectLabel = new JLabel("Server IP: ");
+        nameLabel = new JLabel("Name: ");
         turnLabel = new JLabel("");
+        nameTextField = new JTextField();
         connectTextField = new JTextField();
         connectButton = new JButton(CONNECT_BUTTON_TEXT);
 
@@ -50,10 +53,13 @@ public class GameGUI extends JPanel {
 
         // set JPanel layouts
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
         connectPanel.setLayout(new BoxLayout(connectPanel, BoxLayout.X_AXIS));
         boardPanel.setLayout(new GridLayout(3,3));
 
         // add objects to panels
+        namePanel.add(nameLabel);
+        namePanel.add(nameTextField);
         connectPanel.add(connectLabel);
         connectPanel.add(connectTextField);
         connectPanel.add(connectButton);
@@ -63,6 +69,7 @@ public class GameGUI extends JPanel {
         createBoard();
 
         // add JPanels to master panel
+        add(namePanel);
         add(connectPanel);
         add(boardPanel);
         add(turnPanel);
@@ -95,6 +102,7 @@ public class GameGUI extends JPanel {
 
         // update connect panel
         connectButton.setText(DISCONNECT_BUTTON_TEXT);
+        nameTextField.setEnabled(false);
         connectTextField.setEnabled(false);
     }
 
@@ -111,6 +119,7 @@ public class GameGUI extends JPanel {
 
         // update connect panel
         connectButton.setText(CONNECT_BUTTON_TEXT);
+        nameTextField.setEnabled(true);
         connectTextField.setEnabled(true);
     }
 
@@ -167,7 +176,7 @@ public class GameGUI extends JPanel {
             if(e.getSource() == connectButton) {
                 if(!gameInProgress) {
                     try {
-                        FTPClient.connectToServer(connectTextField.getText());
+                        FTPClient.connectToServer(connectTextField.getText(), nameTextField.getText());
                     } catch (Exception e1) {
                         e1.printStackTrace();
                         return;

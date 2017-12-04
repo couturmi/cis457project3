@@ -20,7 +20,7 @@ public class FTPClient {
         startGUI();
     }
 
-    public static void connectToServer(String serverIP) throws Exception {
+    public static void connectToServer(String serverIP, String name) throws Exception {
         int port = 5568;
         System.out.println("Connecting to " + serverIP + ":" + port);
         try {
@@ -33,6 +33,7 @@ public class FTPClient {
         toServer = new DataOutputStream(ControlSocket.getOutputStream());
         fromServer = new DataInputStream(new BufferedInputStream(ControlSocket.getInputStream()));
 
+        toServer.writeBytes(name + '\n');
         // enable game board
         panel.enableBoard();
     }
