@@ -18,11 +18,14 @@ public final class FTPServer {
         }
         System.out.println("[FTPServer] Server running on port: 5568");
         while (true) {
-            Socket connectionSocket = welcomeSocket.accept();
-            System.out.println("[Client] Connected to " + connectionSocket.getRemoteSocketAddress().toString());
+            Socket connectionSocket1 = welcomeSocket.accept();
+            System.out.println("[Client 1] Connected to " + connectionSocket1.getRemoteSocketAddress().toString());
+
+            Socket connectionSocket2 = welcomeSocket.accept();
+            System.out.println("[Client 2] Connected to " + connectionSocket2.getRemoteSocketAddress().toString());
 
             // Create ClientHandler thread to handle client
-            ClientHandler handler = new ClientHandler(connectionSocket);
+            ClientHandler handler = new ClientHandler(connectionSocket1, connectionSocket2);
             handler.start();
         }
     }
@@ -30,16 +33,20 @@ public final class FTPServer {
 
 class ClientHandler extends Thread {
 
-    private Socket clientSocket;
-    private Scanner input;
+    private final int dataPort = 5570;
 
-    public ClientHandler(Socket socket) {
+    private Socket clientSocket1, clientSocket2;
+    private Scanner input1, input2;
+
+    public ClientHandler(Socket socket1, Socket socket2) {
         //Set up reference to associated socket
-        clientSocket = socket;
+        clientSocket1 = socket1;
+        clientSocket2 = socket2;
 
         try
         {
-            input = new Scanner(clientSocket.getInputStream());
+            input1 = new Scanner(clientSocket1.getInputStream());
+            input2 = new Scanner(clientSocket2.getInputStream());
         }
         catch(IOException ioEx)
         {
@@ -50,25 +57,46 @@ class ClientHandler extends Thread {
     public void run() {
         String fromClient;
         String clientCommand;
-        String frstln;
+        String firstItem, secondItem, thirdItem;
+        boolean client1Turn = true;
 
         do {
-            // read in initial command line from client
-            fromClient = input.nextLine();
+            // read in initial command line from whichever clients turn it is
+            if(client1Turn) {
+                fromClient = input1.nextLine();
+            } else {
+                fromClient = input2.nextLine();
+            }
 
             StringTokenizer tokens = new StringTokenizer(fromClient);
 
-            frstln = tokens.nextToken();
-            int port = Integer.parseInt(frstln);
-            clientCommand = tokens.nextToken();
+            firstItem = tokens.nextToken();
+            secondItem = tokens.nextToken();
 
             //if the command is "close", end this thread
-            if(clientCommand.equals("close")){
+            if(secondItem.equals("close")){
                 endConnection();
                 return;
+            } else {
+                // if not close, get third item
+                thirdItem = tokens.nextToken();
             }
 
-            // TODO: handle client moves here
+            try {
+                Socket dataSocket;
+                if (client1Turn) {
+                    dataSocket = new Socket(clientSocket2.getInetAddress(), dataPort);
+                } else {
+                    dataSocket = new Socket(clientSocket1.getInetAddress(), dataPort);
+                }
+                DataOutputStream dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+                dataOutToClient.writeBytes(secondItem + " " + thirdItem + " " + '\n');
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+            // change turn
+            client1Turn = !client1Turn;
 
         } while (true);
     }
@@ -77,13 +105,16 @@ class ClientHandler extends Thread {
      * Closes the thread
      */
     private void endConnection() {
-        System.out.println("[Quit] Disconnecting from client "+clientSocket.getRemoteSocketAddress().toString());
-        input.close();
+        System.out.println("[Quit] Disconnecting from client "+clientSocket1.getRemoteSocketAddress().toString());
+        System.out.println("[Quit] Disconnecting from client "+clientSocket2.getRemoteSocketAddress().toString());
+        input1.close();
+        input2.close();
         try {
-            clientSocket.close();
+            clientSocket1.close();
+            clientSocket2.close();
         } catch(IOException ioEx) {
             System.out.println("Unable to disconnect!");
         }
-        System.out.println("[Quit] Disconnected from client");
+        System.out.println("[Quit] Disconnected from clients");
     }
 }
