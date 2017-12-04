@@ -51,7 +51,6 @@ public class GameGUI extends JPanel {
         connectTextField = new JTextField();
         chatTextField = new JTextField();
         chatTextArea = new JTextArea();
-        chatTextArea.setLineWrap(true);
         connectButton = new JButton(CONNECT_BUTTON_TEXT);
         scrollPane = new JScrollPane(chatTextArea);
 
@@ -64,6 +63,8 @@ public class GameGUI extends JPanel {
 
         // alter views
         turnLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        chatTextArea.setLineWrap(true);
+        chatTextArea.setRows(5);
         //chatTextArea.setPreferredSize(new Dimension(300,100));
 
         // set JPanel layouts
