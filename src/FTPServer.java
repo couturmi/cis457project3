@@ -128,8 +128,8 @@ class ClientHandler extends Thread {
      */
     private void endConnection() {
         System.out.println("[Quit] Disconnecting from client "+clientSocket1.getRemoteSocketAddress().toString());
-        System.out.println("[Quit] Disconnecting from client "+clientSocket2.getRemoteSocketAddress().toString());
         input1.close();
+        System.out.println("[Quit] Disconnecting from client "+clientSocket2.getRemoteSocketAddress().toString());
         input2.close();
         try {
             clientSocket1.close();
