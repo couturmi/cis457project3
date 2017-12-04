@@ -14,6 +14,8 @@ public class GameGUI extends JPanel {
     private final int BOARD_SIZE = 9;
     private final String TURN_USER_TEXT = "YOUR TURN";
     private final String TURN_OPPONENT_TEXT = "OPPONENT'S TURN";
+    private final String WINNER_TEXT = "YOU WIN!!!";
+    private final String LOSER_TEXT = "YOU LOSE :(";
     private final String CONNECT_BUTTON_TEXT = "Connect";
     private final String DISCONNECT_BUTTON_TEXT = "Disconnect";
 
@@ -49,7 +51,6 @@ public class GameGUI extends JPanel {
         connectTextField = new JTextField();
         chatTextField = new JTextField();
         chatTextArea = new JTextArea();
-        chatTextArea.setRows(5);
         chatTextArea.setLineWrap(true);
         connectButton = new JButton(CONNECT_BUTTON_TEXT);
         scrollPane = new JScrollPane(chatTextArea);
@@ -130,18 +131,24 @@ public class GameGUI extends JPanel {
         gameInProgress = false;
 
         // disable game board tiles
-        if(tiles != null) {
-            for (int i = 0; i < BOARD_SIZE; i++) {
-                tiles[i].setEnabled(false);
-                tiles[i].setText("");
-            }
-        }
+        disableTiles(true);
 
         // update connect panel
         connectButton.setText(CONNECT_BUTTON_TEXT);
         nameTextField.setEnabled(true);
         connectTextField.setEnabled(true);
         chatTextField.setEnabled(false);
+    }
+
+    private void disableTiles(boolean clearText) {
+        if(tiles != null) {
+            for (int i = 0; i < BOARD_SIZE; i++) {
+                tiles[i].setEnabled(false);
+                if(clearText) {
+                    tiles[i].setText("");
+                }
+            }
+        }
     }
 
     public void selectStartingTurn(Player turn) {
@@ -164,16 +171,11 @@ public class GameGUI extends JPanel {
         return false;
     }
 
-    private void updateWinner(Player player) {
-
-    }
-
     public void updateOpponentsMove(Move opponentMove) {
         int buttonId = opponentMove.getTileId();
         // update button
         tiles[buttonId].setText("X");
         tiles[buttonId].setForeground(Color.RED);
-        tiles[buttonId].setEnabled(false);
 
         // check if opponent has won
         if(opponentMove.isUserWon()) {
@@ -194,6 +196,17 @@ public class GameGUI extends JPanel {
             turnLabel.setText(TURN_OPPONENT_TEXT);
             turnLabel.setForeground(Color.RED);
         }
+    }
+
+    private void updateWinner(Player player) {
+        if(player == Player.OPPONENT){
+            turnLabel.setText(LOSER_TEXT);
+            turnLabel.setForeground(Color.MAGENTA);
+        } else if(player == Player.USER) {
+            turnLabel.setText(WINNER_TEXT);
+            turnLabel.setForeground(Color.ORANGE);
+        }
+        disableTiles(false);
     }
 
     private class KeyPress extends KeyAdapter {
@@ -247,8 +260,10 @@ public class GameGUI extends JPanel {
                             FTPClient.sendMoveToServer(move);
 
                             // update turn
-                            turn = Player.OPPONENT;
-                            setTurnLabel(Player.OPPONENT);
+                            if(!userWon) {
+                                turn = Player.OPPONENT;
+                                setTurnLabel(Player.OPPONENT);
+                            }
                         }
                     }
                 }
