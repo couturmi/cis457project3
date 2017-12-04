@@ -39,10 +39,6 @@ public final class FTPServer {
             // Create ClientHandler thread to handle client
             ClientHandler handler = new ClientHandler(connectionSocket1, connectionSocket2, client1, client2, name1, name2);
             handler.start();
-
-            //close extras
-            input1.close();
-            input2.close();
         }
     }
 }
@@ -74,7 +70,7 @@ class ClientHandler extends Thread {
     }
 
     public void run() {
-        String fromClient;
+        String fromClient = "";
         String clientCommand;
         String firstItem, secondItem, thirdItem;
         boolean client1Turn = true;

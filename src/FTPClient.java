@@ -30,7 +30,6 @@ public class FTPClient {
         System.out.println("Connecting to " + serverIP + ":" + port);
         try {
             ControlSocket = new Socket(serverIP, port);
-            chatSocket = new Socket(serverIP, port+10);
         } catch (IOException ioEx) {
             System.out.println("Unable to connect to " + serverIP + ":" + port);
             return;
@@ -53,6 +52,13 @@ public class FTPClient {
         }
 
         System.out.println("I am player "+playerNumber);
+
+        try {
+            chatSocket = new Socket(serverIP, port+10);
+        } catch (IOException ioEx) {
+            System.out.println("Unable to connect to chat " + serverIP + ":" + port);
+            return;
+        }
 
         // set up chat
         chatToServer = new DataOutputStream(chatSocket.getOutputStream());
