@@ -133,7 +133,7 @@ class ReadChat extends Thread {
                     break;
                 }
                 panel.chatTextArea.append(message + '\n');
-                if(panel.chatTextArea.getLineCount() > 6) {
+                if(panel.chatTextArea.getLineCount() > 4) {
                     vert = panel.scrollPane.getVerticalScrollBar();
                     vert.setValue(vert.getMaximum());
                 }
