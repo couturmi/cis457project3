@@ -22,10 +22,16 @@ public final class FTPServer {
         while (true) {
             Socket connectionSocket1 = welcomeSocket.accept();
             System.out.println("[Client 1] Connected to " + connectionSocket1.getRemoteSocketAddress().toString());
+            DataOutputStream toClient1 = new DataOutputStream(connectionSocket1.getOutputStream());
+            toClient1.writeBytes("1" + '\n');
+            toClient1.close();
             Socket client1 = chatSocket.accept();
 
             Socket connectionSocket2 = welcomeSocket.accept();
             System.out.println("[Client 2] Connected to " + connectionSocket2.getRemoteSocketAddress().toString());
+            DataOutputStream toClient2 = new DataOutputStream(connectionSocket2.getOutputStream());
+            toClient2.writeBytes("2" + '\n');
+            toClient2.close();
             Socket client2 = chatSocket.accept();
 
             // Create ClientHandler thread to handle client
