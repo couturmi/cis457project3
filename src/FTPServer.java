@@ -125,6 +125,8 @@ class ClientHandler extends Thread {
         try {
             clientSocket1.close();
             clientSocket2.close();
+            chatClient1.close();
+            chatClient2.close();
         } catch(IOException ioEx) {
             System.out.println("Unable to disconnect!");
         }

@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
+
 
 /**
  * Created by mitchcout on 11/28/2017.
@@ -19,10 +22,12 @@ public class GameGUI extends JPanel {
     private JButton[] tiles;
     private JLabel connectLabel, turnLabel, nameLabel;
     private JTextField connectTextField, nameTextField, chatTextField;
-    private JTextArea chatTextArea;
+    protected JTextArea chatTextArea;
     private JButton connectButton;
+    protected JScrollPane scrollPane;
 
     private ButtonListener m1;
+    private KeyPress k1;
 
     private Player turn;
 
@@ -44,12 +49,18 @@ public class GameGUI extends JPanel {
         nameTextField = new JTextField();
         connectTextField = new JTextField();
         chatTextField = new JTextField();
-        chatTextArea = new JTextArea(5, 10);
+        chatTextArea = new JTextArea();
+        chatTextArea.setRows(5);
+        chatTextArea.setLineWrap(true);
         connectButton = new JButton(CONNECT_BUTTON_TEXT);
+        scrollPane = new JScrollPane(chatTextArea);
 
         // create listener for buttons
         m1 = new ButtonListener();
+        k1 = new KeyPress();
         connectButton.addActionListener(m1);
+        chatTextField.addKeyListener(k1);
+
 
         // alter views
         turnLabel.setFont(new Font("Arial", Font.BOLD, 28));
@@ -70,7 +81,7 @@ public class GameGUI extends JPanel {
         connectPanel.add(connectTextField);
         connectPanel.add(connectButton);
         turnPanel.add(turnLabel);
-        chatPanel.add(chatTextArea);
+        chatPanel.add(scrollPane);
         chatPanel.add(chatTextField);
 
         // create game board
@@ -181,6 +192,14 @@ public class GameGUI extends JPanel {
         }
     }
 
+    private class KeyPress extends KeyAdapter {
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                FTPClient.sendChat(chatTextField.getText());
+                chatTextField.setText("");
+            }
+        }  
+    }
     private class ButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             // connect button

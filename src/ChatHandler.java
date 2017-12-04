@@ -5,7 +5,7 @@ import java.util.*;
 public class ChatHandler extends Thread {
     
    Socket socket;
-   DataInputStream in;
+   BufferedReader in;
    DataOutputStream out;
    String name;
    protected static Vector handlers = new Vector ();
@@ -13,19 +13,19 @@ public class ChatHandler extends Thread {
    public ChatHandler (String name, Socket socket) throws IOException {
    this.name = name;
    this.socket = socket;
-   in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-   out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+   in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+   out = new DataOutputStream(socket.getOutputStream());
    }
     
    public void run () {
 
    try {
-      broadcast(name+" entered");
+      broadcast(name+" entered" + '\n');
       handlers.addElement (this);
 
       while (true) {
-      String message = in.readUTF();
-      broadcast(name + ": " + message);
+         String message = in.readLine();
+         broadcast(name + ": " + message + '\n');
       }
 
    } catch (IOException ex) {
@@ -47,10 +47,10 @@ public class ChatHandler extends Thread {
       while (e.hasMoreElements()) {
       ChatHandler handler = (ChatHandler) e.nextElement();
          try {
-            handler.out.writeUTF(message);
+            handler.out.writeBytes(message);
             handler.out.flush();
          } catch (IOException ex) {
-            handler.stop ();
+            handler.stop();
          }
       }
    }

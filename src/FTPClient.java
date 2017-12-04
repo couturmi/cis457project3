@@ -14,8 +14,10 @@ public class FTPClient {
     private static GameGUI panel;
 
     private static Socket ControlSocket, chatSocket;
-    private static DataOutputStream toServer;
+    private static DataOutputStream toServer, chatToServer;
+    private static BufferedReader chatFromServer;
     private static WaitForOpponentThread currentWaitThread;
+    private static ReadChat chatReader;
 
     public static void main(String argv[]) {
         // Start GUI
@@ -33,7 +35,11 @@ public class FTPClient {
         }
         System.out.println("Connected.");
         toServer = new DataOutputStream(ControlSocket.getOutputStream());
+        chatToServer = new DataOutputStream(chatSocket.getOutputStream());
+        chatFromServer = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
         toServer.writeBytes(name + '\n');
+        chatReader = new ReadChat(panel, chatFromServer);
+        chatReader.start();
         // enable game board
         panel.enableBoard();
     }
@@ -47,6 +53,14 @@ public class FTPClient {
 
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public static void sendChat(String text) {
+        try {
+            chatToServer.writeBytes(text + '\n');
+        } catch (IOException ioEx) {
+            ioEx.printStackTrace();
+        }
     }
 
     public static void sendMoveToServer(Move move){
@@ -69,6 +83,28 @@ public class FTPClient {
         toServer.writeBytes(0 + " close " + '\n');
         ControlSocket.close();
         toServer.close();
+    }
+}
+
+class ReadChat extends Thread {
+    private GameGUI panel;
+    private JScrollBar vert;
+    private static BufferedReader chatFromServer;
+    public ReadChat(GameGUI panel, BufferedReader chatFromServer) {
+        this.panel = panel;
+        this.chatFromServer = chatFromServer;
+    }
+    public void run() {
+        try {
+            while(true) {
+                panel.chatTextArea.append(chatFromServer.readLine() + '\n');
+                vert = panel.scrollPane.getVerticalScrollBar();
+                vert.setValue(vert.getMaximum());
+            }
+        } catch (IOException ioEx) {
+            System.out.println("Read Chat Error");
+            ioEx.printStackTrace();
+        }
     }
 }
 
