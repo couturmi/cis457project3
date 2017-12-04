@@ -64,7 +64,7 @@ public class GameGUI extends JPanel {
 
         // alter views
         turnLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        chatTextArea.setPreferredSize(new Dimension(300,100));
+        chatTextArea.setPreferredSize(new Dimension(300,120));
 
         // set JPanel layouts
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -180,11 +180,11 @@ public class GameGUI extends JPanel {
         // check if opponent has won
         if(opponentMove.isUserWon()) {
             updateWinner(Player.OPPONENT);
+        } else {
+            // update turn
+            turn = Player.USER;
+            setTurnLabel(Player.USER);
         }
-
-        // update turn
-        turn = Player.USER;
-        setTurnLabel(Player.USER);
     }
 
     private void setTurnLabel(Player playerTurn) {
