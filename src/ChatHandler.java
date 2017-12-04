@@ -20,11 +20,14 @@ public class ChatHandler extends Thread {
    public void run () {
 
    try {
-      broadcast(name+" entered" + '\n');
+      broadcast(name+" has entered" + '\n');
       handlers.addElement (this);
 
       while (true) {
          String message = in.readLine();
+         if (message.equals("closeSocket") || message == null) {
+            break;
+         }
          broadcast(name + ": " + message + '\n');
       }
 
@@ -32,7 +35,7 @@ public class ChatHandler extends Thread {
       System.out.println("-- Connection to user lost.");
    } finally {
       handlers.removeElement (this);
-      broadcast(name+" has left");
+      broadcast("closeSocket" + '\n');
       try {
          socket.close();
       } catch (IOException ex) {

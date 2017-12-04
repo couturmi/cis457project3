@@ -127,6 +127,16 @@ class ClientHandler extends Thread {
      * Closes the thread
      */
     private void endConnection() {
+        // try {
+        //     DataOutputStream toCloseChat = new DataOutputStream(chatClient1.getOutputStream());
+        //     toCloseChat.writeBytes("closeSocket" + '\n');
+        //     toCloseChat.close();
+        //     toCloseChat = new DataOutputStream(chatClient2.getOutputStream());
+        //     toCloseChat.writeBytes("closeSocket" + '\n');
+        //     toCloseChat.close();
+        // } catch (IOException ioEx) {
+        //     ioEx.printStackTrace();
+        // }
         System.out.println("[Quit] Disconnecting from client "+clientSocket1.getRemoteSocketAddress().toString());
         System.out.println("[Quit] Disconnecting from client "+clientSocket2.getRemoteSocketAddress().toString());
         input1.close();
@@ -134,8 +144,6 @@ class ClientHandler extends Thread {
         try {
             clientSocket1.close();
             clientSocket2.close();
-            chatClient1.close();
-            chatClient2.close();
         } catch(IOException ioEx) {
             System.out.println("Unable to disconnect!");
         }

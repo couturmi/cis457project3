@@ -62,9 +62,8 @@ public class FTPClient {
 
         // set up chat
         chatToServer = new DataOutputStream(chatSocket.getOutputStream());
-        chatFromServer = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
         toServer.writeBytes(name + '\n');
-        chatReader = new ReadChat(panel, chatFromServer);
+        chatReader = new ReadChat(panel, chatSocket);
         chatReader.start();
         // enable game board
         panel.enableBoard();
@@ -104,7 +103,7 @@ public class FTPClient {
         }
     }
 
-    public static void disconnect() throws Exception{
+    public static void disconnect() throws Exception {
         System.out.println("Closing Control Socket");
         toServer.writeBytes(0 + " close " + '\n');
         ControlSocket.close();
@@ -116,18 +115,26 @@ public class FTPClient {
 class ReadChat extends Thread {
     private GameGUI panel;
     private JScrollBar vert;
+    private Socket socket;
     private static BufferedReader chatFromServer;
-    public ReadChat(GameGUI panel, BufferedReader chatFromServer) {
+    public ReadChat(GameGUI panel, Socket socket) {
         this.panel = panel;
-        this.chatFromServer = chatFromServer;
+        this.socket = socket;
     }
     public void run() {
         try {
+            chatFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while(true) {
-                panel.chatTextArea.append(chatFromServer.readLine() + '\n');
+                String message = chatFromServer.readLine();
+                if (message == null || message.equals("closeSocket")) {
+                    break;
+                }
+                panel.chatTextArea.append(message + '\n');
                 vert = panel.scrollPane.getVerticalScrollBar();
                 vert.setValue(vert.getMaximum());
             }
+            socket.close();
+            chatFromServer.close();
         } catch (IOException ioEx) {
             System.out.println("Read Chat Error");
             ioEx.printStackTrace();
