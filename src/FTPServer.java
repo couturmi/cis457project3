@@ -24,19 +24,25 @@ public final class FTPServer {
             System.out.println("[Client 1] Connected to " + connectionSocket1.getRemoteSocketAddress().toString());
             DataOutputStream toClient1 = new DataOutputStream(connectionSocket1.getOutputStream());
             toClient1.writeBytes("1" + '\n');
-            toClient1.close();
             Socket client1 = chatSocket.accept();
+            Scanner input1 = new Scanner(connectionSocket1.getInputStream());
+            String name1 = input1.nextLine();
 
             Socket connectionSocket2 = welcomeSocket.accept();
             System.out.println("[Client 2] Connected to " + connectionSocket2.getRemoteSocketAddress().toString());
             DataOutputStream toClient2 = new DataOutputStream(connectionSocket2.getOutputStream());
             toClient2.writeBytes("2" + '\n');
-            toClient2.close();
             Socket client2 = chatSocket.accept();
+            Scanner input2 = new Scanner(connectionSocket2.getInputStream());
+            String name2 = input2.nextLine();
 
             // Create ClientHandler thread to handle client
-            ClientHandler handler = new ClientHandler(connectionSocket1, connectionSocket2, client1, client2);
+            ClientHandler handler = new ClientHandler(connectionSocket1, connectionSocket2, client1, client2, name1, name2);
             handler.start();
+
+            //close extras
+            input1.close();
+            input2.close();
         }
     }
 }
@@ -46,13 +52,16 @@ class ClientHandler extends Thread {
 
     private Socket clientSocket1, clientSocket2, chatClient1, chatClient2;
     private Scanner input1, input2;
+    private String name1, name2;
 
-    public ClientHandler(Socket socket1, Socket socket2, Socket socket3, Socket socket4) {
+    public ClientHandler(Socket socket1, Socket socket2, Socket socket3, Socket socket4, String name1, String name2) {
         //Set up reference to associated socket
         clientSocket1 = socket1;
         clientSocket2 = socket2;
         chatClient1 = socket3;
         chatClient2 = socket4;
+        this.name1 = name1;
+        this.name2 = name2;
         try
         {
             input1 = new Scanner(clientSocket1.getInputStream());
@@ -69,8 +78,6 @@ class ClientHandler extends Thread {
         String clientCommand;
         String firstItem, secondItem, thirdItem;
         boolean client1Turn = true;
-        String name1 = input1.nextLine();
-        String name2 = input2.nextLine();
         try {
             ChatHandler c1 = new ChatHandler(name1, chatClient1);
             ChatHandler c2 = new ChatHandler(name2, chatClient2);
