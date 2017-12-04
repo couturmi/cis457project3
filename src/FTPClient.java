@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.net.*;
 import java.io.*;
 import java.lang.*;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 
@@ -15,6 +16,7 @@ public class FTPClient {
 
     private static Socket ControlSocket, chatSocket;
     private static DataOutputStream toServer, chatToServer;
+    private static Scanner fromServer;
     private static BufferedReader chatFromServer;
     private static WaitForOpponentThread currentWaitThread;
     private static ReadChat chatReader;
@@ -28,13 +30,37 @@ public class FTPClient {
         System.out.println("Connecting to " + serverIP + ":" + port);
         try {
             ControlSocket = new Socket(serverIP, port);
-            chatSocket = new Socket(serverIP, port+10);
         } catch (IOException ioEx) {
             System.out.println("Unable to connect to " + serverIP + ":" + port);
             return;
         }
         System.out.println("Connected.");
         toServer = new DataOutputStream(ControlSocket.getOutputStream());
+        fromServer = new Scanner(ControlSocket.getInputStream());
+
+        // get starting turn from client
+        String fromClient = fromServer.nextLine();
+        int playerNumber = Integer.parseInt(fromClient);
+        // if this user is player 2, wait for opponents first move
+        if(playerNumber == 1) {
+            panel.selectStartingTurn(Player.USER);
+        } else if(playerNumber == 2) {
+            panel.selectStartingTurn(Player.OPPONENT);
+            ServerSocket sendMoveData = new ServerSocket(port + 2);
+            currentWaitThread = new WaitForOpponentThread(sendMoveData, panel);
+            currentWaitThread.start();
+        }
+
+        System.out.println("I am player "+playerNumber);
+
+        try {
+            chatSocket = new Socket(serverIP, port+10);
+        } catch (IOException ioEx) {
+            System.out.println("Unable to connect to chat " + serverIP + ":" + port);
+            return;
+        }
+
+        // set up chat
         chatToServer = new DataOutputStream(chatSocket.getOutputStream());
         toServer.writeBytes(name + '\n');
         chatReader = new ReadChat(panel, chatSocket);
@@ -47,7 +73,7 @@ public class FTPClient {
         frame = new JFrame("Tic-Tac-Toe");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        panel = new GameGUI(Player.USER);
+        panel = new GameGUI();
         frame.getContentPane().add(panel);
 
         frame.pack();
@@ -82,6 +108,7 @@ public class FTPClient {
         toServer.writeBytes(0 + " close " + '\n');
         ControlSocket.close();
         toServer.close();
+        fromServer.close();
     }
 }
 

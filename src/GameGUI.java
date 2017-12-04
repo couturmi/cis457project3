@@ -33,8 +33,7 @@ public class GameGUI extends JPanel {
 
     private boolean gameInProgress;
 
-    public GameGUI(Player turn) {
-        this.turn = turn;
+    public GameGUI() {
         gameInProgress = false;
 
         // create objects
@@ -64,7 +63,7 @@ public class GameGUI extends JPanel {
 
         // alter views
         turnLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        setTurnLabel();
+        chatTextArea.setPreferredSize(new Dimension(300,100));
 
         // set JPanel layouts
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -145,6 +144,11 @@ public class GameGUI extends JPanel {
         chatTextField.setEnabled(false);
     }
 
+    public void selectStartingTurn(Player turn) {
+        this.turn = turn;
+        setTurnLabel(turn);
+    }
+
     private boolean checkIfPlayerWon() {
         if((!tiles[0].getText().equals("") && tiles[0].getText().equals(tiles[1].getText()) && tiles[0].getText().equals(tiles[2].getText()))   // row 1
                 || (!tiles[3].getText().equals("") && tiles[3].getText().equals(tiles[4].getText()) && tiles[3].getText().equals(tiles[5].getText()))   // row 2
@@ -178,15 +182,15 @@ public class GameGUI extends JPanel {
 
         // update turn
         turn = Player.USER;
-        setTurnLabel();
+        setTurnLabel(Player.USER);
     }
 
-    private void setTurnLabel() {
-        if(this.turn == Player.USER) {
+    private void setTurnLabel(Player playerTurn) {
+        if(playerTurn == Player.USER) {
             turnLabel.setText(TURN_USER_TEXT);
             turnLabel.setForeground(Color.BLUE);
 
-        } else if(this.turn == Player.OPPONENT) {
+        } else if(playerTurn == Player.OPPONENT) {
             turnLabel.setText(TURN_OPPONENT_TEXT);
             turnLabel.setForeground(Color.RED);
         }
@@ -244,7 +248,7 @@ public class GameGUI extends JPanel {
 
                             // update turn
                             turn = Player.OPPONENT;
-                            setTurnLabel();
+                            setTurnLabel(Player.OPPONENT);
                         }
                     }
                 }
