@@ -25,7 +25,7 @@ public class ChatHandler extends Thread {
 
       while (true) {
          String message = in.readLine();
-         if (message.equals("closeSocket") || message == null) {
+         if (message == null || message.equals("closeSocket")) {
             break;
          }
          broadcast(name + ": " + message + '\n');
