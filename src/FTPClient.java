@@ -111,7 +111,6 @@ public class FTPClient {
         toServer.close();
         fromServer.close();
         chatToServer.close();
-        chatFromServer.close();
     }
 }
 
@@ -128,10 +127,15 @@ class ReadChat extends Thread {
         try {
             chatFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while(true) {
-                String message = chatFromServer.readLine();
-                if (message == null || message.equals("closeSocket")) {
+		String message = "";
+		try {
+                message = chatFromServer.readLine();
+		if (message == null || message.equals("closeSocket")) {
                     break;
                 }
+		} catch(Exception e){
+		    System.exit(0);
+		}
                 panel.chatTextArea.append(message + '\n');
                 if(panel.chatTextArea.getLineCount() > 4) {
                     vert = panel.scrollPane.getVerticalScrollBar();
